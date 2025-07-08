@@ -1,0 +1,62 @@
+﻿USE CollegeEventDB;
+
+
+1. INNER JOIN between Event and Venue to get event names with venue names
+SELECT E.event_name, V.venue_name
+FROM Event E
+INNER JOIN Venue V ON E.venue_id = V.venue_id;
+
+
+2. LEFT JOIN to get all students and their corresponding team (if any)
+SELECT S.name AS student_name, T.team_name
+FROM Student S
+LEFT JOIN Team T ON S.student_id = T.leader_id;
+
+
+ 3. RIGHT JOIN to get all teams and their leaders (if available)
+SELECT T.team_name, S.name AS leader_name
+FROM Student S
+RIGHT JOIN Team T ON S.student_id = T.leader_id;
+
+
+Alternative if RIGHT JOIN not available
+SELECT T.team_name, S.name AS leader_name
+FROM Team T
+LEFT JOIN Student S ON T.leader_id = S.student_id;
+
+
+ 4. FULL OUTER JOIN between Event and Result (for events with/without results)
+FULL OUTER JOIN not supported directly in MySQL – emulate using UNION
+
+
+SELECT E.event_id, E.event_name, R.position
+FROM Event E
+LEFT JOIN Result R ON E.event_id = R.event_id
+
+
+UNION
+
+
+SELECT E.event_id, E.event_name, R.position
+FROM Event E
+RIGHT JOIN Result R ON E.event_id = R.event_id;
+
+
+5. INNER JOIN across 3 tables: Team, Participation, and Event
+SELECT T.team_name, E.event_name, P.status
+FROM Team T
+INNER JOIN Participation P ON T.team_id = P.team_id
+INNER JOIN Event E ON P.event_id = E.event_id;
+
+
+6. LEFT JOIN to list all events with or without participation
+SELECT E.event_name, P.team_id
+FROM Event E
+LEFT JOIN Participation P ON E.event_id = P.event_id;
+
+
+ 7. INNER JOIN between Result and Team to show winners and their teams
+SELECT E.event_name, T.team_name, R.position
+FROM Result R
+INNER JOIN Team T ON R.team_id = T.team_id
+INNER JOIN Event E ON R.event_id = E.event_id;
